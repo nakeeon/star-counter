@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>⭐ Лічильник зірочок</title>
+<title>🪙 Лічильник знайликів</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap');
   
@@ -221,13 +221,13 @@
 <body>
 
 <div class="container">
-  <h1>⭐ Лічильник зірочок</h1>
+  <h1>🪙 Лічильник знайликів</h1>
   <p class="subtitle">Велика буква в назвах країн, міст, сіл, річок</p>
   
   <div id="tasks"></div>
   
   <div class="total-section">
-    <div class="total-label">Усього зірочок:</div>
+    <div class="total-label">Усього знайликів:</div>
     <div class="total-stars-row" id="totalStarsRow"></div>
     <div class="total-count" id="totalCount">0</div>
     
@@ -265,17 +265,17 @@ function render() {
     const div = document.createElement('div');
     div.className = 'task';
     
-    const starsStr = '★'.repeat(state[i]) + '<span style="color:#ddd">' + '☆'.repeat(task.max - state[i]) + '</span>';
+    const starsStr = '🪙'.repeat(state[i]) + '<span style="color:#ddd">' + '○'.repeat(task.max - state[i]) + '</span>';
     
     div.innerHTML = `
       <div class="task-left">
         <div class="task-name">${task.emoji} ${task.name}</div>
-        <div class="task-max">макс. ${task.max} ★</div>
+        <div class="task-max">макс. ${task.max} 🪙</div>
       </div>
       <div class="task-stars" id="stars-${i}">${starsStr}</div>
       <div class="task-buttons">
         <button class="btn-star btn-minus" onclick="removeStar(${i})">−</button>
-        <button class="btn-star btn-plus" onclick="addStar(${i})">★</button>
+        <button class="btn-star btn-plus" onclick="addStar(${i})">🪙</button>
       </div>
     `;
     container.appendChild(div);
@@ -304,7 +304,7 @@ function removeStar(i) {
 function updateTotal() {
   const total = state.reduce((a, b) => a + b, 0);
   document.getElementById('totalCount').textContent = total;
-  document.getElementById('totalStarsRow').textContent = '★'.repeat(total);
+  document.getElementById('totalStarsRow').textContent = '🪙'.repeat(total);
 }
 
 function getTotal() {
@@ -320,7 +320,7 @@ function showResult() {
     emoji = '🏆🎉🌟';
     colorName = '🟢 ЗЕЛЕНИЙ — ТВІЙ УСПІХ!';
     color = '#2e7d32';
-    text = 'Ти чудово засвоїв тему! Пишаюся тобою!';
+    text = 'Ти чудово засвоїв тему! Пишаюся тобою! 🪙🪙🪙';
     bg = 'linear-gradient(135deg, #e8f5e9, #c8e6c9)';
     launchConfetti();
   } else if (total >= 9) {
@@ -374,7 +374,7 @@ function launchConfetti() {
 }
 
 function resetAll() {
-  if (getTotal() > 0 && !confirm('Почати спочатку? Усі зірочки зникнуть!')) return;
+  if (getTotal() > 0 && !confirm('Почати спочатку? Усі знайлики зникнуть!')) return;
   state.fill(0);
   document.getElementById('resultBox').style.display = 'none';
   render();
