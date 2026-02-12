@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⭐ Лічильник зірочок</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap');
+  
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  body {
+    font-family: 'Comic Neue', 'Comic Sans MS', cursive;
+    background: linear-gradient(135deg, #e8f4fd 0%, #fff9e6 50%, #e8fde8 100%);
+    min-height: 100vh;
+    padding: 10px;
+  }
+  
+  .container {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  
+  h1 {
+    text-align: center;
+    font-size: 28px;
+    color: #2c3e80;
+    margin: 10px 0;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+  }
+  
+  .subtitle {
+    text-align: center;
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 15px;
+  }
+  
+  .task {
+    background: white;
+    border-radius: 16px;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    transition: transform 0.1s;
+  }
+  
+  .task:active { transform: scale(0.98); }
+  
+  .task-left {
+    flex: 1;
+  }
+  
+  .task-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+  }
+  
+  .task-max {
+    font-size: 13px;
+    color: #999;
+  }
+  
+  .task-stars {
+    font-size: 24px;
+    min-width: 80px;
+    text-align: center;
+    letter-spacing: 2px;
+    line-height: 1.2;
+  }
+  
+  .task-buttons {
+    display: flex;
+    gap: 6px;
+  }
+  
+  .btn-star {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s, box-shadow 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .btn-star:active { transform: scale(1.2); }
+  
+  .btn-plus {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    box-shadow: 0 2px 6px rgba(255,165,0,0.4);
+    color: white;
+  }
+  
+  .btn-minus {
+    background: #eee;
+    color: #999;
+    font-size: 18px;
+  }
+  
+  .btn-minus:active { background: #ddd; }
+  
+  .total-section {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 15px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+  
+  .total-count {
+    font-size: 48px;
+    font-weight: 700;
+    color: #2c3e80;
+    line-height: 1;
+  }
+  
+  .total-label {
+    font-size: 16px;
+    color: #888;
+    margin-bottom: 5px;
+  }
+  
+  .total-stars-row {
+    font-size: 28px;
+    margin: 8px 0;
+    letter-spacing: 3px;
+    min-height: 36px;
+  }
+  
+  .result-btn {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 14px 40px;
+    font-size: 22px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    margin-top: 12px;
+    box-shadow: 0 4px 12px rgba(76,175,80,0.4);
+    transition: transform 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .result-btn:active { transform: scale(0.95); }
+  
+  .result-box {
+    display: none;
+    margin-top: 15px;
+    padding: 20px;
+    border-radius: 16px;
+    text-align: center;
+    animation: popIn 0.4s ease-out;
+  }
+  
+  @keyframes popIn {
+    0% { transform: scale(0.5); opacity: 0; }
+    70% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  
+  .result-emoji { font-size: 60px; }
+  .result-color { font-size: 28px; font-weight: 700; margin: 8px 0; }
+  .result-text { font-size: 20px; color: #555; }
+  
+  .reset-btn {
+    background: none;
+    border: 2px solid #ddd;
+    border-radius: 20px;
+    padding: 8px 24px;
+    font-size: 16px;
+    font-family: inherit;
+    color: #999;
+    cursor: pointer;
+    margin-top: 15px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .reset-btn:active { background: #f5f5f5; }
+
+  /* Confetti */
+  .confetti-piece {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    animation: confettiFall 3s ease-out forwards;
+    pointer-events: none;
+    z-index: 1000;
+  }
+  
+  @keyframes confettiFall {
+    0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+
+  @keyframes starPop {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.4); }
+    100% { transform: scale(1); }
+  }
+  
+  .star-pop {
+    display: inline-block;
+    animation: starPop 0.3s ease-out;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>⭐ Лічильник зірочок</h1>
+  <p class="subtitle">Велика буква в назвах країн, міст, сіл, річок</p>
+  
+  <div id="tasks"></div>
+  
+  <div class="total-section">
+    <div class="total-label">Усього зірочок:</div>
+    <div class="total-stars-row" id="totalStarsRow"></div>
+    <div class="total-count" id="totalCount">0</div>
+    
+    <button class="result-btn" onclick="showResult()">🎨 Визнач свій колір!</button>
+    
+    <div class="result-box" id="resultBox">
+      <div class="result-emoji" id="resultEmoji"></div>
+      <div class="result-color" id="resultColor"></div>
+      <div class="result-text" id="resultText"></div>
+    </div>
+    
+    <br>
+    <button class="reset-btn" onclick="resetAll()">🔄 Почати спочатку</button>
+  </div>
+</div>
+
+<script>
+const tasks = [
+  { name: "Розминка", emoji: "🔍", max: 1 },
+  { name: "Завдання 1", emoji: "✏️", max: 2 },
+  { name: "Завдання 2", emoji: "🏙️", max: 2 },
+  { name: "Завдання 3", emoji: "🔎", max: 3 },
+  { name: "Подорож Україною", emoji: "✈️", max: 2 },
+  { name: "Завдання 4", emoji: "📝", max: 3 },
+  { name: "Творче завдання", emoji: "💡", max: 3 },
+];
+
+const state = tasks.map(() => 0);
+
+function render() {
+  const container = document.getElementById('tasks');
+  container.innerHTML = '';
+  
+  tasks.forEach((task, i) => {
+    const div = document.createElement('div');
+    div.className = 'task';
+    
+    const starsStr = '★'.repeat(state[i]) + '<span style="color:#ddd">' + '☆'.repeat(task.max - state[i]) + '</span>';
+    
+    div.innerHTML = `
+      <div class="task-left">
+        <div class="task-name">${task.emoji} ${task.name}</div>
+        <div class="task-max">макс. ${task.max} ★</div>
+      </div>
+      <div class="task-stars" id="stars-${i}">${starsStr}</div>
+      <div class="task-buttons">
+        <button class="btn-star btn-minus" onclick="removeStar(${i})">−</button>
+        <button class="btn-star btn-plus" onclick="addStar(${i})">★</button>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+  
+  updateTotal();
+}
+
+function addStar(i) {
+  if (state[i] < tasks[i].max) {
+    state[i]++;
+    render();
+    // Hide result when changing stars
+    document.getElementById('resultBox').style.display = 'none';
+  }
+}
+
+function removeStar(i) {
+  if (state[i] > 0) {
+    state[i]--;
+    render();
+    document.getElementById('resultBox').style.display = 'none';
+  }
+}
+
+function updateTotal() {
+  const total = state.reduce((a, b) => a + b, 0);
+  document.getElementById('totalCount').textContent = total;
+  document.getElementById('totalStarsRow').textContent = '★'.repeat(total);
+}
+
+function getTotal() {
+  return state.reduce((a, b) => a + b, 0);
+}
+
+function showResult() {
+  const total = getTotal();
+  const box = document.getElementById('resultBox');
+  let emoji, color, colorName, text, bg;
+  
+  if (total >= 13) {
+    emoji = '🏆🎉🌟';
+    colorName = '🟢 ЗЕЛЕНИЙ — ТВІЙ УСПІХ!';
+    color = '#2e7d32';
+    text = 'Ти чудово засвоїв тему! Пишаюся тобою!';
+    bg = 'linear-gradient(135deg, #e8f5e9, #c8e6c9)';
+    launchConfetti();
+  } else if (total >= 9) {
+    emoji = '👏💪';
+    colorName = '🔵 СИНІЙ — МАЙЖЕ ВДАЛОСЯ!';
+    color = '#1565c0';
+    text = 'Гарний результат! Трішки попрацюй і буде ідеально!';
+    bg = 'linear-gradient(135deg, #e3f2fd, #bbdefb)';
+    launchConfetti();
+  } else if (total >= 5) {
+    emoji = '🤗💪';
+    colorName = '🟠 ОРАНЖЕВИЙ — БУЛО ВАЖКО';
+    color = '#e65100';
+    text = 'Не сумуй! Повтори правило і спробуй ще раз!';
+    bg = 'linear-gradient(135deg, #fff3e0, #ffe0b2)';
+  } else {
+    emoji = '🤝❤️';
+    colorName = '🟡 ЖОВТИЙ — ПОТРЕБУЄШ ДОПОМОГИ';
+    color = '#f9a825';
+    text = 'Не сумуй! Ми допоможемо разом!';
+    bg = 'linear-gradient(135deg, #fffde7, #fff9c4)';
+  }
+  
+  box.style.display = 'block';
+  box.style.background = bg;
+  document.getElementById('resultEmoji').textContent = emoji;
+  document.getElementById('resultColor').textContent = colorName;
+  document.getElementById('resultColor').style.color = color;
+  document.getElementById('resultText').textContent = text;
+  
+  box.style.animation = 'none';
+  box.offsetHeight;
+  box.style.animation = 'popIn 0.4s ease-out';
+}
+
+function launchConfetti() {
+  const colors = ['#FFD700', '#FF6B6B', '#4CAF50', '#2196F3', '#FF9800', '#9C27B0', '#00BCD4'];
+  for (let i = 0; i < 40; i++) {
+    setTimeout(() => {
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.style.left = Math.random() * 100 + 'vw';
+      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+      piece.style.animationDuration = (2 + Math.random() * 2) + 's';
+      piece.style.width = (6 + Math.random() * 8) + 'px';
+      piece.style.height = (6 + Math.random() * 8) + 'px';
+      document.body.appendChild(piece);
+      setTimeout(() => piece.remove(), 4000);
+    }, i * 50);
+  }
+}
+
+function resetAll() {
+  if (getTotal() > 0 && !confirm('Почати спочатку? Усі зірочки зникнуть!')) return;
+  state.fill(0);
+  document.getElementById('resultBox').style.display = 'none';
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
