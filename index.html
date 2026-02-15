@@ -128,7 +128,7 @@
       </div>
       <div class="reset-row">
         <button class="reset-btn" onclick="resetAll()">🔄 Спочатку</button>
-        <button class="edit-btn" onclick="editSetup()">⚙️ Змінити урок</button>
+        <button class="edit-btn" id="editBtn" onclick="editSetup()">⚙️ Змінити урок</button>
       </div>
     </div>
   </div>
@@ -158,6 +158,7 @@ function init(){
         document.getElementById('blueMin').value=cfg.thresholds.blue||55;
         document.getElementById('orangeMin').value=cfg.thresholds.orange||30;
       }
+      startGame();
       return;
     }catch(e){}
   }
@@ -226,6 +227,9 @@ function startGame(){
   
   document.getElementById('setup').style.display='none';
   document.getElementById('game').style.display='block';
+  // Hide edit button if opened via student link (config param)
+  const isStudent = new URLSearchParams(window.location.search).has('config');
+  if(isStudent) document.getElementById('editBtn').style.display='none';
   render();
 }
 
