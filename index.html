@@ -3,298 +3,434 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🪙 Лічильник знайликів</title>
+<title>📖 Лічильник знайликів</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap');
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Comic Neue','Comic Sans MS',cursive;background:linear-gradient(135deg,#e8f4fd 0%,#fff9e6 50%,#e8fde8 100%);min-height:100vh;padding:10px}
-  .container{max-width:500px;margin:0 auto}
-  h1{text-align:center;font-size:26px;color:#2c3e80;margin:8px 0}
-  .subtitle{text-align:center;font-size:15px;color:#666;margin-bottom:12px;min-height:20px}
+  
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  body {
+    font-family: 'Comic Neue', 'Comic Sans MS', cursive;
+    background: linear-gradient(135deg, #e8f4fd 0%, #fff9e6 50%, #e8fde8 100%);
+    min-height: 100vh;
+    padding: 10px;
+  }
+  
+  .container {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  
+  h1 {
+    text-align: center;
+    font-size: 28px;
+    color: #2c3e80;
+    margin: 10px 0;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+  }
+  
+  .subtitle {
+    text-align: center;
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 15px;
+  }
+  
+  .task {
+    background: white;
+    border-radius: 16px;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    transition: transform 0.1s;
+  }
+  
+  .task:active { transform: scale(0.98); }
+  
+  .task-left {
+    flex: 1;
+  }
+  
+  .task-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+  }
+  
+  .task-max {
+    font-size: 13px;
+    color: #999;
+  }
+  
+  .task-stars {
+    font-size: 24px;
+    min-width: 80px;
+    text-align: center;
+    letter-spacing: 2px;
+    line-height: 1.2;
+  }
+  
+  .task-buttons {
+    display: flex;
+    gap: 6px;
+  }
+  
+  .btn-star {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s, box-shadow 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .btn-star:active { transform: scale(1.2); }
+  
+  .btn-plus {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    box-shadow: 0 2px 6px rgba(255,165,0,0.4);
+    color: white;
+  }
+  
+  .btn-minus {
+    background: #eee;
+    color: #999;
+    font-size: 18px;
+  }
+  
+  .btn-minus:active { background: #ddd; }
+  
+  .total-section {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 15px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+  
+  .total-count {
+    font-size: 48px;
+    font-weight: 700;
+    color: #2c3e80;
+    line-height: 1;
+  }
+  
+  .total-label {
+    font-size: 16px;
+    color: #888;
+    margin-bottom: 5px;
+  }
+  
+  .total-stars-row {
+    font-size: 28px;
+    margin: 8px 0;
+    letter-spacing: 3px;
+    min-height: 36px;
+  }
+  
+  .result-btn {
+    background: linear-gradient(135deg, #e53935, #c62828);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 14px 40px;
+    font-size: 22px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    margin-top: 12px;
+    box-shadow: 0 4px 12px rgba(229,57,53,0.4);
+    transition: transform 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .result-btn:active { transform: scale(0.95); }
+  
+  .result-box {
+    display: none;
+    margin-top: 15px;
+    padding: 20px;
+    border-radius: 16px;
+    text-align: center;
+    animation: popIn 0.4s ease-out;
+  }
+  
+  @keyframes popIn {
+    0% { transform: scale(0.5); opacity: 0; }
+    70% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  
+  .result-emoji { font-size: 60px; }
+  .result-color { font-size: 28px; font-weight: 700; margin: 8px 0; }
+  .result-text { font-size: 20px; color: #555; }
+  
+  .reset-btn {
+    background: none;
+    border: 2px solid #ddd;
+    border-radius: 20px;
+    padding: 8px 24px;
+    font-size: 16px;
+    font-family: inherit;
+    color: #999;
+    cursor: pointer;
+    margin-top: 15px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .reset-btn:active { background: #f5f5f5; }
 
-  /* Setup screen */
-  .setup{background:white;border-radius:20px;padding:20px;box-shadow:0 3px 15px rgba(0,0,0,0.08);margin-bottom:15px}
-  .setup h2{font-size:20px;color:#2c3e80;margin-bottom:12px;text-align:center}
-  .setup label{font-size:16px;color:#555;font-weight:700;display:block;margin:10px 0 4px}
-  .setup input,.setup select{width:100%;padding:10px 14px;border:2px solid #e0e0e0;border-radius:12px;font-size:16px;font-family:inherit}
-  .setup input:focus,.setup select:focus{outline:none;border-color:#4a90d9}
-  .task-row{display:flex;gap:8px;align-items:center;margin:6px 0}
-  .task-row input{flex:1}
-  .task-row input.max-input{width:60px;flex:none;text-align:center}
-  .task-row .remove-btn{width:32px;height:32px;border-radius:50%;border:none;background:#f0f0f0;color:#999;font-size:18px;cursor:pointer}
-  .task-row .remove-btn:hover{background:#ffdddd;color:#e44}
-  .add-task-btn{width:100%;padding:10px;border:2px dashed #ccc;border-radius:12px;background:none;font-size:16px;font-family:inherit;color:#888;cursor:pointer;margin:8px 0}
-  .add-task-btn:hover{border-color:#4a90d9;color:#4a90d9}
-  .start-btn{width:100%;padding:14px;background:linear-gradient(135deg,#4CAF50,#45a049);color:white;border:none;border-radius:14px;font-size:20px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:12px;box-shadow:0 3px 12px rgba(76,175,80,0.3)}
-  .start-btn:active{transform:scale(0.97)}
+  /* Znailyk book icon */
+  .znailyk {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+  }
 
-  /* Game screen */
-  .game{display:none}
-  .task{background:white;border-radius:16px;padding:12px 14px;margin-bottom:8px;box-shadow:0 2px 8px rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:space-between;gap:8px}
-  .task-left{flex:1}
-  .task-name{font-size:17px;font-weight:700;color:#333}
-  .task-max{font-size:12px;color:#999}
-  .task-znailyks{min-width:70px;text-align:center;display:flex;flex-wrap:wrap;justify-content:center;gap:2px}
-  .znailyk-img{width:28px;height:28px;animation:znPop 0.3s ease-out}
-  .znailyk-empty{width:28px;height:28px;opacity:0.15}
-  @keyframes znPop{0%{transform:scale(0)}60%{transform:scale(1.3)}100%{transform:scale(1)}}
-  .task-buttons{display:flex;gap:5px}
-  .btn-zn{width:42px;height:42px;border-radius:50%;border:none;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}
-  .btn-plus{background:linear-gradient(135deg,#FFD700,#FFA500);box-shadow:0 2px 6px rgba(255,165,0,0.3);color:white}
-  .btn-plus:active{transform:scale(1.2)}
-  .btn-minus{background:#eee;color:#999;font-size:16px}
-  .btn-minus:active{background:#ddd}
+  /* Lego brick for color results */
+  .lego {
+    display: inline-block;
+    width: 32px;
+    height: 20px;
+    border-radius: 4px;
+    vertical-align: middle;
+    margin-right: 6px;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+  .lego::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 4px;
+    width: 8px;
+    height: 6px;
+    border-radius: 3px 3px 0 0;
+    background: inherit;
+    box-shadow: 16px 0 0 0 currentColor;
+  }
+  .lego::after {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 20px;
+    width: 8px;
+    height: 6px;
+    border-radius: 3px 3px 0 0;
+    background: inherit;
+  }
+  .lego-green { background: #2e7d32; color: #2e7d32; }
+  .lego-blue { background: #1565c0; color: #1565c0; }
+  .lego-orange { background: #e65100; color: #e65100; }
+  .lego-yellow { background: #f9a825; color: #f9a825; }
 
-  .total-section{background:white;border-radius:20px;padding:18px;margin-top:12px;text-align:center;box-shadow:0 3px 15px rgba(0,0,0,0.08)}
-  .total-label{font-size:15px;color:#888;margin-bottom:4px}
-  .total-znailyks{display:flex;flex-wrap:wrap;justify-content:center;gap:3px;margin:6px 0;min-height:32px}
-  .total-count{font-size:44px;font-weight:700;color:#2c3e80}
-  .result-btn{background:linear-gradient(135deg,#4CAF50,#45a049);color:white;border:none;border-radius:30px;padding:12px 36px;font-size:20px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:10px;box-shadow:0 3px 12px rgba(76,175,80,0.3)}
-  .result-btn:active{transform:scale(0.95)}
-  .result-box{display:none;margin-top:12px;padding:18px;border-radius:16px;text-align:center;animation:popIn 0.4s ease-out}
-  @keyframes popIn{0%{transform:scale(0.5);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
-  .result-emoji{font-size:52px}
-  .result-color{font-size:24px;font-weight:700;margin:6px 0}
-  .result-text{font-size:18px;color:#555}
-  .reset-row{display:flex;gap:8px;justify-content:center;margin-top:12px}
-  .reset-btn,.edit-btn{background:none;border:2px solid #ddd;border-radius:20px;padding:8px 20px;font-size:14px;font-family:inherit;color:#999;cursor:pointer}
-  .reset-btn:active,.edit-btn:active{background:#f5f5f5}
+  /* Confetti */
+  .confetti-piece {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    animation: confettiFall 3s ease-out forwards;
+    pointer-events: none;
+    z-index: 1000;
+  }
+  
+  @keyframes confettiFall {
+    0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
 
-  .confetti-piece{position:fixed;border-radius:2px;animation:confettiFall 3s ease-out forwards;pointer-events:none;z-index:1000}
-  @keyframes confettiFall{0%{transform:translateY(-10px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
-
-  /* Color legend mini */
-  .color-legend{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:8px 0;font-size:12px;font-weight:700}
-  .color-legend span{padding:3px 8px;border-radius:8px}
-  .cl-green{background:#e8f5e9;color:#2e7d32}
-  .cl-blue{background:#e3f2fd;color:#1565c0}
-  .cl-orange{background:#fff3e0;color:#e65100}
-  .cl-yellow{background:#fffde7;color:#f9a825}
+  @keyframes starPop {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.4); }
+    100% { transform: scale(1); }
+  }
+  
+  .star-pop {
+    display: inline-block;
+    animation: starPop 0.3s ease-out;
+  }
 </style>
 </head>
 <body>
+
 <div class="container">
-  <h1><img src="znailyk.png" style="width:32px;height:32px;vertical-align:middle"> Лічильник знайликів</h1>
-  <p class="subtitle" id="lessonName"></p>
-
-  <!-- SETUP -->
-  <div class="setup" id="setup">
-    <h2>⚙️ Налаштування уроку</h2>
-    <label>Назва уроку:</label>
-    <input type="text" id="inputLesson" placeholder="Наприклад: Українська мова — Велика буква">
+  <h1>📖 Лічильник знайликів</h1>
+  <p class="subtitle">Велика буква в назвах країн, міст, сіл, річок</p>
+  
+  <div id="tasks"></div>
+  
+  <div class="total-section">
+    <div class="total-label">Усього знайликів:</div>
+    <div class="total-stars-row" id="totalStarsRow"></div>
+    <div class="total-count" id="totalCount">0</div>
     
-    <label>Завдання:</label>
-    <div id="taskList"></div>
-    <button class="add-task-btn" onclick="addTaskRow()">+ Додати завдання</button>
-
-    <label>Кольорове оцінювання:</label>
-    <div style="display:flex;gap:6px;margin:6px 0;flex-wrap:wrap">
-      <span style="font-size:14px">🟢 від <input type="number" id="greenMin" value="80" style="width:50px;padding:4px;border:1px solid #ccc;border-radius:6px;font-size:14px">%</span>
-      <span style="font-size:14px">🔵 від <input type="number" id="blueMin" value="55" style="width:50px;padding:4px;border:1px solid #ccc;border-radius:6px;font-size:14px">%</span>
-      <span style="font-size:14px">🟠 від <input type="number" id="orangeMin" value="30" style="width:50px;padding:4px;border:1px solid #ccc;border-radius:6px;font-size:14px">%</span>
-      <span style="font-size:14px">🟡 решта</span>
+    <button class="result-btn" onclick="showResult()">🎨 Визнач свій колір!</button>
+    
+    <div class="result-box" id="resultBox">
+      <div class="result-emoji" id="resultEmoji"></div>
+      <div class="result-color" id="resultColor"></div>
+      <div class="result-text" id="resultText"></div>
     </div>
-
-    <button class="start-btn" onclick="startGame()">✅ Почати урок!</button>
-  </div>
-
-  <!-- GAME -->
-  <div class="game" id="game">
-    <div id="tasks"></div>
-    <div class="total-section">
-      <div class="total-label">Усього знайликів:</div>
-      <div class="total-znailyks" id="totalZnailyks"></div>
-      <div class="total-count" id="totalCount">0</div>
-      <div class="color-legend">
-        <span class="cl-green" id="lgGreen">🟢 ?+</span>
-        <span class="cl-blue" id="lgBlue">🔵 ?+</span>
-        <span class="cl-orange" id="lgOrange">🟠 ?+</span>
-        <span class="cl-yellow" id="lgYellow">🟡 0+</span>
-      </div>
-      <button class="result-btn" onclick="showResult()">🎨 Визнач свій колір!</button>
-      <div class="result-box" id="resultBox">
-        <div class="result-emoji" id="resultEmoji"></div>
-        <div class="result-color" id="resultColor"></div>
-        <div class="result-text" id="resultText"></div>
-      </div>
-      <div class="reset-row">
-        <button class="reset-btn" onclick="resetAll()">🔄 Спочатку</button>
-        <button class="edit-btn" onclick="editSetup()">⚙️ Змінити урок</button>
-      </div>
-    </div>
+    
+    <br>
+    <button class="reset-btn" onclick="resetAll()">🔄 Почати спочатку</button>
   </div>
 </div>
 
 <script>
-let tasks=[], state=[], thresholds={green:80,blue:55,orange:30};
-const ZNAILYK_IMG = 'znailyk.png';
+const ZNAILYK = '📖';
 
-// Default tasks
-const defaultTasks = [
-  {name:"Завдання 1", emoji:"📝", max:2},
-  {name:"Завдання 2", emoji:"✏️", max:2},
-  {name:"Завдання 3", emoji:"📖", max:3},
+const tasks = [
+  { name: "Розминка", emoji: "🔍", max: 1 },
+  { name: "Завдання 1", emoji: "✏️", max: 2 },
+  { name: "Завдання 2", emoji: "🏙️", max: 2 },
+  { name: "Завдання 3", emoji: "🔎", max: 3 },
+  { name: "Подорож Україною", emoji: "✈️", max: 2 },
+  { name: "Завдання 4", emoji: "📝", max: 3 },
+  { name: "Творче завдання", emoji: "💡", max: 3 },
 ];
 
-function init(){
-  // Load from URL params or localStorage
-  const params = new URLSearchParams(window.location.search);
-  if(params.has('config')){
-    try{
-      const cfg = JSON.parse(atob(params.get('config')));
-      document.getElementById('inputLesson').value = cfg.lesson||'';
-      loadTaskRows(cfg.tasks||defaultTasks);
-      if(cfg.thresholds){
-        document.getElementById('greenMin').value=cfg.thresholds.green||80;
-        document.getElementById('blueMin').value=cfg.thresholds.blue||55;
-        document.getElementById('orangeMin').value=cfg.thresholds.orange||30;
-      }
-      return;
-    }catch(e){}
-  }
-  const saved = localStorage.getItem('znailyk_setup');
-  if(saved){
-    try{
-      const cfg=JSON.parse(saved);
-      document.getElementById('inputLesson').value=cfg.lesson||'';
-      loadTaskRows(cfg.tasks||defaultTasks);
-      if(cfg.thresholds){
-        document.getElementById('greenMin').value=cfg.thresholds.green||80;
-        document.getElementById('blueMin').value=cfg.thresholds.blue||55;
-        document.getElementById('orangeMin').value=cfg.thresholds.orange||30;
-      }
-      return;
-    }catch(e){}
-  }
-  loadTaskRows(defaultTasks);
-}
+const state = tasks.map(() => 0);
 
-function loadTaskRows(list){
-  document.getElementById('taskList').innerHTML='';
-  list.forEach(t=>addTaskRow(t.name,t.max));
-}
-
-let taskCounter=0;
-function addTaskRow(name,max){
-  taskCounter++;
-  const div=document.createElement('div');
-  div.className='task-row';
-  div.innerHTML=`<input type="text" placeholder="Назва завдання" value="${name||''}" class="task-name-input">
-    <input type="number" min="1" max="10" value="${max||2}" class="max-input" title="Макс. знайликів">
-    <button class="remove-btn" onclick="this.parentElement.remove()">×</button>`;
-  document.getElementById('taskList').appendChild(div);
-}
-
-function startGame(){
-  const lesson=document.getElementById('inputLesson').value.trim();
-  const rows=document.querySelectorAll('.task-row');
-  if(rows.length===0){alert('Додай хоча б одне завдання!');return}
+function render() {
+  const container = document.getElementById('tasks');
+  container.innerHTML = '';
   
-  tasks=[];
-  rows.forEach((r,i)=>{
-    const name=r.querySelector('.task-name-input').value.trim()||`Завдання ${i+1}`;
-    const max=parseInt(r.querySelector('.max-input').value)||2;
-    tasks.push({name,max});
-  });
-  
-  thresholds={
-    green:parseInt(document.getElementById('greenMin').value)||80,
-    blue:parseInt(document.getElementById('blueMin').value)||55,
-    orange:parseInt(document.getElementById('orangeMin').value)||30,
-  };
-  
-  // Save config
-  const cfg={lesson,tasks,thresholds};
-  localStorage.setItem('znailyk_setup',JSON.stringify(cfg));
-  
-  state=tasks.map(()=>0);
-  document.getElementById('lessonName').textContent=lesson;
-  
-  // Show thresholds in legend
-  const maxTotal=tasks.reduce((a,t)=>a+t.max,0);
-  const gn=Math.ceil(maxTotal*thresholds.green/100);
-  const bn=Math.ceil(maxTotal*thresholds.blue/100);
-  const on=Math.ceil(maxTotal*thresholds.orange/100);
-  document.getElementById('lgGreen').textContent=`🟢 ${gn}+`;
-  document.getElementById('lgBlue').textContent=`🔵 ${bn}+`;
-  document.getElementById('lgOrange').textContent=`🟠 ${on}+`;
-  document.getElementById('lgYellow').textContent=`🟡 0-${on-1}`;
-  
-  document.getElementById('setup').style.display='none';
-  document.getElementById('game').style.display='block';
-  render();
-}
-
-function render(){
-  const container=document.getElementById('tasks');
-  container.innerHTML='';
-  tasks.forEach((task,i)=>{
-    const div=document.createElement('div');div.className='task';
-    let zn='';
-    for(let j=0;j<task.max;j++){
-      if(j<state[i]) zn+=`<img src="${ZNAILYK_IMG}" class="znailyk-img">`;
-      else zn+=`<img src="${ZNAILYK_IMG}" class="znailyk-empty">`;
-    }
-    div.innerHTML=`<div class="task-left"><div class="task-name">${task.name}</div><div class="task-max">макс. ${task.max}</div></div>
-      <div class="task-znailyks">${zn}</div>
-      <div class="task-buttons"><button class="btn-zn btn-minus" onclick="remove(${i})">−</button><button class="btn-zn btn-plus" onclick="add(${i})"><img src="${ZNAILYK_IMG}" style="width:24px;height:24px"></button></div>`;
+  tasks.forEach((task, i) => {
+    const div = document.createElement('div');
+    div.className = 'task';
+    
+    const starsStr = (ZNAILYK).repeat(state[i]) + '<span style="color:#ddd">' + '○'.repeat(task.max - state[i]) + '</span>';
+    
+    div.innerHTML = `
+      <div class="task-left">
+        <div class="task-name">${task.emoji} ${task.name}</div>
+        <div class="task-max">макс. ${task.max} ${ZNAILYK}</div>
+      </div>
+      <div class="task-stars" id="stars-${i}">${starsStr}</div>
+      <div class="task-buttons">
+        <button class="btn-star btn-minus" onclick="removeStar(${i})">−</button>
+        <button class="btn-star btn-plus" onclick="addStar(${i})">${ZNAILYK}</button>
+      </div>
+    `;
     container.appendChild(div);
   });
+  
   updateTotal();
 }
 
-function add(i){if(state[i]<tasks[i].max){state[i]++;render();document.getElementById('resultBox').style.display='none'}}
-function remove(i){if(state[i]>0){state[i]--;render();document.getElementById('resultBox').style.display='none'}}
-
-function getTotal(){return state.reduce((a,b)=>a+b,0)}
-function getMax(){return tasks.reduce((a,t)=>a+t.max,0)}
-
-function updateTotal(){
-  const total=getTotal();
-  document.getElementById('totalCount').textContent=total;
-  const tz=document.getElementById('totalZnailyks');tz.innerHTML='';
-  for(let i=0;i<total;i++){const img=document.createElement('img');img.src=ZNAILYK_IMG;img.style.width='24px';img.style.height='24px';tz.appendChild(img)}
-}
-
-function showResult(){
-  const total=getTotal(), max=getMax();
-  const pct=max>0?total/max*100:0;
-  const box=document.getElementById('resultBox');
-  let emoji,colorName,color,text,bg;
-  if(pct>=thresholds.green){
-    emoji='🏆🎉🌟';colorName='🟢 ЗЕЛЕНИЙ — ТВІЙ УСПІХ!';color='#2e7d32';text='Ти чудово попрацював! Пишаюся тобою!';bg='linear-gradient(135deg,#e8f5e9,#c8e6c9)';launchConfetti();
-  }else if(pct>=thresholds.blue){
-    emoji='👏💪';colorName='🔵 СИНІЙ — МАЙЖЕ ВДАЛОСЯ!';color='#1565c0';text='Гарний результат! Трішки попрацюй і буде ідеально!';bg='linear-gradient(135deg,#e3f2fd,#bbdefb)';launchConfetti();
-  }else if(pct>=thresholds.orange){
-    emoji='🤗💪';colorName='🟠 ОРАНЖЕВИЙ — БУЛО ВАЖКО';color='#e65100';text='Не сумуй! Повтори і спробуй ще раз!';bg='linear-gradient(135deg,#fff3e0,#ffe0b2)';
-  }else{
-    emoji='🤝❤️';colorName='🟡 ЖОВТИЙ — ПОТРЕБУЄШ ДОПОМОГИ';color='#f9a825';text='Не сумуй! Ми допоможемо разом!';bg='linear-gradient(135deg,#fffde7,#fff9c4)';
+function addStar(i) {
+  if (state[i] < tasks[i].max) {
+    state[i]++;
+    render();
+    document.getElementById('resultBox').style.display = 'none';
   }
-  box.style.display='block';box.style.background=bg;
-  document.getElementById('resultEmoji').textContent=emoji;
-  document.getElementById('resultColor').textContent=colorName;
-  document.getElementById('resultColor').style.color=color;
-  document.getElementById('resultText').textContent=`${text} (${total}/${max})`;
-  box.style.animation='none';box.offsetHeight;box.style.animation='popIn 0.4s ease-out';
 }
 
-function resetAll(){
-  if(getTotal()>0&&!confirm('Почати спочатку? Усі знайлики зникнуть!'))return;
-  state.fill(0);document.getElementById('resultBox').style.display='none';render();
+function removeStar(i) {
+  if (state[i] > 0) {
+    state[i]--;
+    render();
+    document.getElementById('resultBox').style.display = 'none';
+  }
 }
 
-function editSetup(){
-  document.getElementById('setup').style.display='block';
-  document.getElementById('game').style.display='none';
-  loadTaskRows(tasks.map((t,i)=>({name:t.name,max:t.max})));
+function updateTotal() {
+  const total = state.reduce((a, b) => a + b, 0);
+  document.getElementById('totalCount').textContent = total;
+  document.getElementById('totalStarsRow').textContent = (ZNAILYK).repeat(total);
 }
 
-function launchConfetti(){
-  const colors=['#FFD700','#FF6B6B','#4CAF50','#2196F3','#FF9800','#9C27B0'];
-  for(let i=0;i<35;i++){setTimeout(()=>{const p=document.createElement('div');p.className='confetti-piece';p.style.left=Math.random()*100+'vw';p.style.background=colors[Math.floor(Math.random()*colors.length)];p.style.animationDuration=(2+Math.random()*2)+'s';p.style.width=(6+Math.random()*8)+'px';p.style.height=(6+Math.random()*8)+'px';document.body.appendChild(p);setTimeout(()=>p.remove(),4000)},i*50)}
+function getTotal() {
+  return state.reduce((a, b) => a + b, 0);
 }
 
-init();
+function legoHTML(cssClass) {
+  return `<span class="lego ${cssClass}"></span>`;
+}
+
+function showResult() {
+  const total = getTotal();
+  const box = document.getElementById('resultBox');
+  let emoji, colorName, color, text, bg;
+  
+  if (total >= 13) {
+    emoji = '🏆🎉🌟';
+    colorName = legoHTML('lego-green') + ' ЗЕЛЕНИЙ — ТВІЙ УСПІХ!';
+    color = '#2e7d32';
+    text = 'Ти чудово засвоїв тему! Пишаюся тобою! ' + ZNAILYK + ZNAILYK + ZNAILYK;
+    bg = 'linear-gradient(135deg, #e8f5e9, #c8e6c9)';
+    launchConfetti();
+  } else if (total >= 9) {
+    emoji = '👏💪';
+    colorName = legoHTML('lego-blue') + ' СИНІЙ — МАЙЖЕ ВДАЛОСЯ!';
+    color = '#1565c0';
+    text = 'Гарний результат! Трішки попрацюй і буде ідеально!';
+    bg = 'linear-gradient(135deg, #e3f2fd, #bbdefb)';
+    launchConfetti();
+  } else if (total >= 5) {
+    emoji = '🤗💪';
+    colorName = legoHTML('lego-orange') + ' ОРАНЖЕВИЙ — БУЛО ВАЖКО';
+    color = '#e65100';
+    text = 'Не сумуй! Повтори правило і спробуй ще раз!';
+    bg = 'linear-gradient(135deg, #fff3e0, #ffe0b2)';
+  } else {
+    emoji = '🤝❤️';
+    colorName = legoHTML('lego-yellow') + ' ЖОВТИЙ — ПОТРЕБУЄШ ДОПОМОГИ';
+    color = '#f9a825';
+    text = 'Не сумуй! Ми допоможемо разом!';
+    bg = 'linear-gradient(135deg, #fffde7, #fff9c4)';
+  }
+  
+  box.style.display = 'block';
+  box.style.background = bg;
+  document.getElementById('resultEmoji').textContent = emoji;
+  document.getElementById('resultColor').innerHTML = colorName;
+  document.getElementById('resultColor').style.color = color;
+  document.getElementById('resultText').textContent = text;
+  
+  box.style.animation = 'none';
+  box.offsetHeight;
+  box.style.animation = 'popIn 0.4s ease-out';
+}
+
+function launchConfetti() {
+  const colors = ['#FFD700', '#FF6B6B', '#4CAF50', '#2196F3', '#FF9800', '#9C27B0', '#00BCD4'];
+  for (let i = 0; i < 40; i++) {
+    setTimeout(() => {
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.style.left = Math.random() * 100 + 'vw';
+      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+      piece.style.animationDuration = (2 + Math.random() * 2) + 's';
+      piece.style.width = (6 + Math.random() * 8) + 'px';
+      piece.style.height = (6 + Math.random() * 8) + 'px';
+      document.body.appendChild(piece);
+      setTimeout(() => piece.remove(), 4000);
+    }, i * 50);
+  }
+}
+
+function resetAll() {
+  if (getTotal() > 0 && !confirm('Почати спочатку? Усі знайлики зникнуть!')) return;
+  state.fill(0);
+  document.getElementById('resultBox').style.display = 'none';
+  render();
+}
+
+render();
 </script>
 </body>
 </html>
