@@ -227,9 +227,8 @@ function startGame(){
   
   document.getElementById('setup').style.display='none';
   document.getElementById('game').style.display='block';
-  // Hide edit button if opened via student link (config param)
-  const isStudent = new URLSearchParams(window.location.search).has('config');
-  if(isStudent) document.getElementById('editBtn').style.display='none';
+  // Hide edit button after start (teacher reloads page to get back to setup)
+  document.getElementById('editBtn').style.display='none';
   render();
 }
 
