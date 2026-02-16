@@ -96,14 +96,25 @@
 let tasks=[], thresholds={green:80,blue:55,orange:30};
 
 function init(){
-  // Try config from URL param first, then localStorage
   let cfg=null;
-  const params=new URLSearchParams(window.location.search);
-  if(params.has('config')){
-    try{cfg=JSON.parse(atob(params.get('config')))}catch(e){}
+  // Read from URL hash (compact format: lesson|name1:max1,name2:max2|green,blue,orange)
+  const hash=window.location.hash.slice(1);
+  if(hash){
+    try{
+      const decoded=decodeURIComponent(escape(atob(hash)));
+      const parts=decoded.split('|');
+      if(parts.length>=2){
+        const lesson=parts[0];
+        const taskList=parts[1].split(',').map(t=>{const p=t.split(':');return{name:p[0],max:parseInt(p[1])||2}});
+        const th=parts[2]?parts[2].split(','):[80,55,30];
+        cfg={lesson,tasks:taskList,thresholds:{green:parseInt(th[0])||80,blue:parseInt(th[1])||55,orange:parseInt(th[2])||30}};
+      }
+    }catch(e){}
   }
+  // Fallback: try old config param
   if(!cfg){
-    try{cfg=JSON.parse(localStorage.getItem('znailyk_student_config'))}catch(e){}
+    const params=new URLSearchParams(window.location.search);
+    if(params.has('config')){try{cfg=JSON.parse(atob(params.get('config')))}catch(e){}}
   }
   if(!cfg || !cfg.tasks || cfg.tasks.length===0){
     document.getElementById('errorScreen').style.display='block';

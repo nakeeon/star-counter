@@ -331,11 +331,12 @@ function generateStudentLink(){
     }
   };
   
-  // Save config to localStorage so student.html on same domain can read it
-  localStorage.setItem('znailyk_student_config', JSON.stringify(cfg));
+  // Compact format: lesson|name1:max1,name2:max2|green,blue,orange
+  const compact = cfg.lesson+'|'+cfg.tasks.map(t=>t.name+':'+t.max).join(',')+'|'+cfg.thresholds.green+','+cfg.thresholds.blue+','+cfg.thresholds.orange;
+  const encoded = btoa(unescape(encodeURIComponent(compact)));
   
   const baseUrl=window.location.href.split('?')[0].replace('index.html','').replace(/\/$/,'');
-  const url=baseUrl+'/student.html';
+  const url=baseUrl+'/student.html#'+encoded;
   
   document.getElementById('studentUrl').textContent=url;
   document.getElementById('studentUrl').href=url;
