@@ -106,6 +106,13 @@
     </div>
 
     <button class="start-btn" onclick="startGame()">✅ Почати урок!</button>
+    <button class="start-btn" style="background:linear-gradient(135deg,#2196F3,#1565c0);margin-top:8px;box-shadow:0 3px 12px rgba(33,150,243,0.3)" onclick="generateStudentLink()">🔗 Створити посилання для учнів</button>
+    <div id="studentLink" style="display:none;margin-top:12px;padding:12px;background:#e3f2fd;border-radius:12px;word-break:break-all">
+      <div style="font-size:14px;color:#1565c0;font-weight:700;margin-bottom:6px">Посилання для учнів:</div>
+      <a id="studentUrl" href="#" target="_blank" style="font-size:13px;color:#333"></a>
+      <br><button onclick="copyLink()" style="margin-top:8px;padding:6px 16px;border:none;border-radius:8px;background:#1565c0;color:white;font-family:inherit;font-size:14px;cursor:pointer">📋 Копіювати</button>
+      <span id="copyMsg" style="font-size:13px;color:#2e7d32;margin-left:6px;display:none">✅ Скопійовано!</span>
+    </div>
   </div>
 
   <div class="game" id="game">
@@ -300,6 +307,46 @@ function editSetup(){
 function launchConfetti(){
   const colors=['#FFD700','#FF6B6B','#4CAF50','#2196F3','#FF9800','#9C27B0'];
   for(let i=0;i<35;i++){setTimeout(()=>{const p=document.createElement('div');p.className='confetti-piece';p.style.left=Math.random()*100+'vw';p.style.background=colors[Math.floor(Math.random()*colors.length)];p.style.animationDuration=(2+Math.random()*2)+'s';p.style.width=(6+Math.random()*8)+'px';p.style.height=(6+Math.random()*8)+'px';document.body.appendChild(p);setTimeout(()=>p.remove(),4000)},i*50)}
+}
+
+function generateStudentLink(){
+  const lesson=document.getElementById('inputLesson').value.trim();
+  const rows=document.querySelectorAll('.task-row');
+  if(rows.length===0){alert('Додай хоча б одне завдання!');return}
+  if(!lesson){alert('Введи назву уроку!');return}
+  
+  const taskList=[];
+  rows.forEach((r,i)=>{
+    const name=r.querySelector('.task-name-input').value.trim()||('Завдання '+(i+1));
+    const max=parseInt(r.querySelector('.max-input').value)||2;
+    taskList.push({name,max});
+  });
+  
+  const cfg={
+    lesson,
+    tasks:taskList,
+    thresholds:{
+      green:parseInt(document.getElementById('greenMin').value)||80,
+      blue:parseInt(document.getElementById('blueMin').value)||55,
+      orange:parseInt(document.getElementById('orangeMin').value)||30,
+    }
+  };
+  
+  const encoded=btoa(unescape(encodeURIComponent(JSON.stringify(cfg))));
+  const baseUrl=window.location.href.split('?')[0].replace('index.html','').replace(/\/$/,'');
+  const url=baseUrl+'/student.html?config='+encoded;
+  
+  document.getElementById('studentUrl').textContent=url;
+  document.getElementById('studentUrl').href=url;
+  document.getElementById('studentLink').style.display='block';
+}
+
+function copyLink(){
+  const url=document.getElementById('studentUrl').textContent;
+  navigator.clipboard.writeText(url).then(()=>{
+    document.getElementById('copyMsg').style.display='inline';
+    setTimeout(()=>{document.getElementById('copyMsg').style.display='none'},2000);
+  });
 }
 
 init();
