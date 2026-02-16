@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Лічильник знайликів</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Comic Neue','Comic Sans MS',cursive;background:linear-gradient(135deg,#e8f4fd 0%,#fff9e6 50%,#e8fde8 100%);min-height:100vh;padding:10px}
+  .container{max-width:500px;margin:0 auto}
+  h1{text-align:center;font-size:26px;color:#2c3e80;margin:10px 0}
+  .title-icon{width:32px;height:32px;vertical-align:middle}
+  .subtitle{text-align:center;font-size:17px;color:#555;margin-bottom:15px;font-weight:700}
+  .hint{text-align:center;font-size:15px;color:#888;margin-bottom:10px}
+
+  .task{background:white;border-radius:16px;padding:14px 16px;margin-bottom:8px;box-shadow:0 2px 8px rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .task-left{flex:1}
+  .task-name{font-size:18px;font-weight:700;color:#333}
+  .task-max{font-size:13px;color:#999}
+  .task-znailyks{min-width:70px;text-align:center;display:flex;flex-wrap:wrap;justify-content:center;gap:2px}
+  .znailyk-img{width:28px;height:28px;animation:znPop 0.3s ease-out}
+  .znailyk-empty{width:28px;height:28px;opacity:0.15}
+  @keyframes znPop{0%{transform:scale(0)}60%{transform:scale(1.3)}100%{transform:scale(1)}}
+  .task-buttons{display:flex;gap:5px}
+  .btn-zn{width:42px;height:42px;border-radius:50%;border:none;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}
+  .btn-plus{background:linear-gradient(135deg,#FFD700,#FFA500);box-shadow:0 2px 6px rgba(255,165,0,0.3)}
+  .btn-plus:active{transform:scale(1.2)}
+  .btn-minus{background:#eee;color:#999;font-size:16px}
+  .btn-minus:active{background:#ddd}
+
+  .total-section{background:white;border-radius:20px;padding:18px;margin-top:12px;text-align:center;box-shadow:0 3px 15px rgba(0,0,0,0.08)}
+  .total-label{font-size:15px;color:#888;margin-bottom:4px}
+  .total-count{font-size:44px;font-weight:700;color:#2c3e80}
+  .znailyk-row{display:flex;justify-content:center;gap:2px;flex-wrap:wrap;margin:6px 0;min-height:30px}
+  .znailyk-row img{width:24px;height:24px}
+
+  .result-btn{background:linear-gradient(135deg,#e53935,#c62828);color:white;border:none;border-radius:30px;padding:14px 40px;font-size:22px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:12px;box-shadow:0 4px 12px rgba(229,57,53,0.4);transition:transform 0.15s}
+  .result-btn:active{transform:scale(0.95)}
+  .result-box{display:none;margin-top:14px;padding:20px;border-radius:16px;text-align:center;animation:popIn 0.4s ease-out}
+  @keyframes popIn{0%{transform:scale(0.5);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+  .result-emoji{font-size:56px}
+  .result-color{font-size:26px;font-weight:700;margin:8px 0}
+  .result-text{font-size:18px;color:#555}
+
+  .lego{display:inline-block;width:32px;height:20px;border-radius:4px;vertical-align:middle;margin-right:4px;position:relative;box-shadow:0 2px 4px rgba(0,0,0,0.2)}
+  .lego::before{content:'';position:absolute;top:-6px;left:4px;width:8px;height:6px;border-radius:3px 3px 0 0;background:inherit}
+  .lego::after{content:'';position:absolute;top:-6px;left:20px;width:8px;height:6px;border-radius:3px 3px 0 0;background:inherit}
+  .lego-green{background:#2e7d32}.lego-blue{background:#1565c0}.lego-orange{background:#e65100}.lego-yellow{background:#f9a825}
+
+  .color-legend{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:10px 0;font-size:12px;font-weight:700}
+  .color-legend span{padding:3px 8px;border-radius:8px;display:flex;align-items:center;gap:3px}
+  .cl-green{background:#e8f5e9;color:#2e7d32}.cl-blue{background:#e3f2fd;color:#1565c0}.cl-orange{background:#fff3e0;color:#e65100}.cl-yellow{background:#fffde7;color:#f9a825}
+
+  .reset-btn{background:none;border:2px solid #ddd;border-radius:20px;padding:8px 20px;font-size:14px;font-family:inherit;color:#999;cursor:pointer;margin-top:12px}
+  .reset-btn:active{background:#f5f5f5}
+
+  .error-screen{text-align:center;padding:40px 20px}
+  .error-screen .emoji{font-size:64px}
+  .error-screen .msg{font-size:18px;color:#666;margin-top:10px;line-height:1.5}
+
+  .confetti-piece{position:fixed;border-radius:2px;animation:confettiFall 3s ease-out forwards;pointer-events:none;z-index:1000}
+  @keyframes confettiFall{0%{transform:translateY(-10px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🪙 Лічильник знайликів</h1>
+  <p class="subtitle" id="lessonName"></p>
+
+  <div id="errorScreen" class="error-screen" style="display:none">
+    <div class="emoji">😕</div>
+    <div class="msg">Урок ще не налаштований.<br>Попроси вчителя створити посилання.</div>
+  </div>
+
+  <div id="gameArea" style="display:none">
+    <p class="hint">Натискай монетку, щоб додати знайлик:</p>
+    <div id="tasks"></div>
+    <div class="total-section">
+      <div class="total-label">Усього знайликів:</div>
+      <div class="znailyk-row" id="totalZnailyks"></div>
+      <div class="total-count" id="totalCount">0</div>
+      <div class="color-legend" id="legend"></div>
+      <button class="result-btn" onclick="showResult()">🎨 Визнач свій колір!</button>
+      <div class="result-box" id="resultBox">
+        <div class="result-emoji" id="resultEmoji"></div>
+        <div class="result-color" id="resultColor"></div>
+        <div class="result-text" id="resultText"></div>
+      </div>
+      <br><button class="reset-btn" onclick="resetAll()">🔄 Спочатку</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let tasks=[], thresholds={green:80,blue:55,orange:30};
+
+function init(){
+  let cfg=null;
+  // Read from URL hash (compact format: lesson|name1:max1,name2:max2|green,blue,orange)
+  const hash=window.location.hash.slice(1);
+  if(hash){
+    try{
+      // Try compressed format first (base64url -> deflate-raw -> text)
+      const b64=hash.replace(/-/g,'+').replace(/_/g,'/');
+      const pad=b64.length%4;
+      const padded=pad?b64+'='.repeat(4-pad):b64;
+      const bytes=Uint8Array.from(atob(padded),c=>c.charCodeAt(0));
+      const ds=new DecompressionStream('deflate-raw');
+      const writer=ds.writable.getWriter();
+      writer.write(bytes);writer.close();
+      const reader=ds.readable.getReader();
+      const chunks=[];
+      async function decompress(){
+        while(true){const{done,value}=await reader.read();if(done)break;chunks.push(value)}
+        const all=new Uint8Array(chunks.reduce((a,c)=>a+c.length,0));
+        let off=0;chunks.forEach(c=>{all.set(c,off);off+=c.length});
+        const decoded=new TextDecoder().decode(all);
+        parseCfg(decoded);
+      }
+      decompress();
+      return;
+    }catch(e){
+      // Fallback: try plain base64
+      try{
+        const decoded=decodeURIComponent(escape(atob(hash)));
+        parseCfg(decoded);
+        return;
+      }catch(e2){}
+    }
+  }
+  // No valid config found
+  document.getElementById('errorScreen').style.display='block';
+}
+
+function parseCfg(str){
+  try{
+    const parts=str.split('|');
+    if(parts.length<2){document.getElementById('errorScreen').style.display='block';return}
+    const lesson=parts[0];
+    const taskList=parts[1].split(',').map(t=>{const p=t.split(':');let nm=p[0];if(/^З\d/.test(nm))nm=nm.replace('З','Завдання ');return{name:nm,max:parseInt(p[1])||2}});
+    const th=parts[2]?parts[2].split(','):[80,55,30];
+    tasks=taskList;
+    thresholds={green:parseInt(th[0])||80,blue:parseInt(th[1])||55,orange:parseInt(th[2])||30};
+    document.getElementById('lessonName').textContent=lesson||'Урок';
+    document.getElementById('gameArea').style.display='block';
+    renderTasks();
+    renderLegend();
+  }catch(e){document.getElementById('errorScreen').style.display='block'}
+}
+
+let state=[];
+
+function renderTasks(){
+  state=tasks.map(()=>0);
+  render();
+}
+
+function render(){
+  const c=document.getElementById('tasks');c.innerHTML='';
+  tasks.forEach((t,i)=>{
+    const d=document.createElement('div');d.className='task';
+    let zn='';
+    for(let j=0;j<t.max;j++){
+      if(j<state[i]) zn+='<img src="coin.png" class="znailyk-img">';
+      else zn+='<img src="coin.png" class="znailyk-empty">';
+    }
+    d.innerHTML='<div class="task-left"><div class="task-name">'+t.name+'</div><div class="task-max">макс. '+t.max+'</div></div>'+
+      '<div class="task-znailyks">'+zn+'</div>'+
+      '<div class="task-buttons"><button class="btn-zn btn-minus" onclick="remove('+i+')">−</button><button class="btn-zn btn-plus" onclick="add('+i+')"><img src="coin.png" style="width:24px;height:24px"></button></div>';
+    c.appendChild(d);
+  });
+  updateTotal();
+}
+
+function add(i){if(state[i]<tasks[i].max){state[i]++;render();document.getElementById('resultBox').style.display='none'}}
+function remove(i){if(state[i]>0){state[i]--;render();document.getElementById('resultBox').style.display='none'}}
+
+function renderLegend(){
+  const mx=tasks.reduce((a,t)=>a+t.max,0);
+  const g=Math.ceil(mx*thresholds.green/100),b=Math.ceil(mx*thresholds.blue/100),o=Math.ceil(mx*thresholds.orange/100);
+  document.getElementById('legend').innerHTML=
+    '<span class="cl-green"><span class="lego lego-green" style="width:16px;height:10px"></span> '+g+'+</span>'+
+    '<span class="cl-blue"><span class="lego lego-blue" style="width:16px;height:10px"></span> '+b+'+</span>'+
+    '<span class="cl-orange"><span class="lego lego-orange" style="width:16px;height:10px"></span> '+o+'+</span>'+
+    '<span class="cl-yellow"><span class="lego lego-yellow" style="width:16px;height:10px"></span> 0-'+(o-1)+'</span>';
+}
+
+function getTotal(){return state.reduce((a,b)=>a+b,0)}
+
+function updateTotal(){
+  const t=getTotal();
+  document.getElementById('totalCount').textContent=t;
+  const r=document.getElementById('totalZnailyks');r.innerHTML='';
+  for(let i=0;i<t;i++){const img=document.createElement('img');img.src='coin.png';img.style.width='24px';r.appendChild(img)}
+}
+
+function lego(c){return '<span class="lego lego-'+c+'"></span>'}
+
+function showResult(){
+  const total=getTotal(),max=tasks.reduce((a,t)=>a+t.max,0);
+  const pct=max>0?total/max*100:0;
+  const box=document.getElementById('resultBox');
+  let emoji,cn,color,text,bg;
+  if(pct>=thresholds.green){emoji='🏆🎉🌟';cn=lego('green')+' ЗЕЛЕНИЙ — ТВІЙ УСПІХ!';color='#2e7d32';text='Ти чудово попрацював! Пишаюся тобою!';bg='linear-gradient(135deg,#e8f5e9,#c8e6c9)';confetti()}
+  else if(pct>=thresholds.blue){emoji='👏💪';cn=lego('blue')+' СИНІЙ — МАЙЖЕ ВДАЛОСЯ!';color='#1565c0';text='Гарний результат! Трішки попрацюй і буде ідеально!';bg='linear-gradient(135deg,#e3f2fd,#bbdefb)';confetti()}
+  else if(pct>=thresholds.orange){emoji='🤗💪';cn=lego('orange')+' ОРАНЖЕВИЙ — БУЛО ВАЖКО';color='#e65100';text='Не сумуй! Повтори і спробуй ще раз!';bg='linear-gradient(135deg,#fff3e0,#ffe0b2)'}
+  else{emoji='🤝❤️';cn=lego('yellow')+' ЖОВТИЙ — ПОТРЕБУЄШ ДОПОМОГИ';color='#f9a825';text='Не сумуй! Ми допоможемо разом!';bg='linear-gradient(135deg,#fffde7,#fff9c4)'}
+  box.style.display='block';box.style.background=bg;
+  document.getElementById('resultEmoji').textContent=emoji;
+  document.getElementById('resultColor').innerHTML=cn;
+  document.getElementById('resultColor').style.color=color;
+  document.getElementById('resultText').textContent=text+' ('+total+'/'+max+')';
+  box.style.animation='none';box.offsetHeight;box.style.animation='popIn 0.4s ease-out';
+}
+
+function resetAll(){
+  state.fill(0);
+  document.getElementById('resultBox').style.display='none';
+  render();
+}
+
+function confetti(){
+  const cl=['#FFD700','#FF6B6B','#4CAF50','#2196F3','#FF9800','#9C27B0'];
+  for(let i=0;i<35;i++){setTimeout(()=>{const p=document.createElement('div');p.className='confetti-piece';p.style.left=Math.random()*100+'vw';p.style.background=cl[Math.floor(Math.random()*cl.length)];p.style.animationDuration=(2+Math.random()*2)+'s';p.style.width=(6+Math.random()*8)+'px';p.style.height=(6+Math.random()*8)+'px';document.body.appendChild(p);setTimeout(()=>p.remove(),4000)},i*50)}
+}
+
+init();
+</script>
+</body>
+</html>
