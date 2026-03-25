@@ -233,8 +233,8 @@ function startGame(){
   
   document.getElementById('setup').style.display='none';
   document.getElementById('game').style.display='block';
-  // Hide edit button after start (teacher reloads page to get back to setup)
-  document.getElementById('editBtn').style.display='none';
+  // Edit button always visible so teacher can change lesson at any time
+  document.getElementById('editBtn').style.display='';
   render();
 }
 
